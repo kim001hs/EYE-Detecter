@@ -31,7 +31,7 @@
 
     ```bash
     pip install opencv-python numpy dlib pygame
-
+    ```
     ##### 3.shape_predictor_68_face_landmarks.dat 파일을 다운로드 후, Python 파일과 같은 폴더에 넣기
 
 
