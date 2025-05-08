@@ -41,6 +41,7 @@ pip install opencv-python numpy dlib pygame
 ```
 ##### 3. 모델 파일 준비
 -shape_predictor_68_face_landmarks.dat 파일을 다운로드 후, Python 파일과 같은 폴더에 넣기기.
+
 다운로드 링크: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
 
 ##### 4. 실행
@@ -61,19 +62,29 @@ pip install opencv-python numpy dlib pygame
 
 
 
+---
 
+
+
+
+---
 ### 코드 설명
+---
 
-
-
+---
 ### 기술 스택
+---
 
 
-
-
+---
 ### License
     [MIT License](https://github.com/kim001hs/Sleeping-Detecter/blob/main/LICENSE)
+---
 
+---
 ### Reference
+---
 
+---
 ### Review
+---
