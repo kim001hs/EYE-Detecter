@@ -32,7 +32,10 @@ cap= cv2.VideoCapture(0)
 eye_closed_start = None
 # 알람 실행
 alarm_playing = False
-
+# 눈 감고 있는지 확인
+eye_closed = False
+# 눈 감은 횟수
+eye_closed_count = 0
 # 알람
 def play_alarm():
     pygame.mixer.init()
@@ -70,14 +73,18 @@ while True:
             if eye_closed_start is None:
                 eye_closed_start = time.time()
             elif time.time() - eye_closed_start >= 3:
+                print("눈을 감고 있습니다.")
                 if not alarm_playing:
                     threading.Thread(target=play_alarm).start()
+            if eye_closed == False:
+                eye_closed = True
+                eye_closed_count+= 1
         else:
             eye_closed_start = None
-
+            eye_closed = False
     cv2.imshow("Frame", frame)
     if cv2.waitKey(1) == 27:  # ESC 키 누르면 종료
         break
-
+print (f"눈을 감은 횟수: {eye_closed_count}")
 cap.release()
 cv2.destroyAllWindows()
