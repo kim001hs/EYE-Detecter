@@ -20,18 +20,30 @@
 
 ### 실행하기
 
--   ##### exe파일 다운로드 후 실행
+---
 
+#### 방법 1: exe 파일 다운로드 후 실행
+- 아래 링크에서 파일 다운로드 후 실행  
+  [다운로드 링크]
 
--   ##### 1. Python 설치
-    - Python 3.8 이상 설치: https://www.python.org/
+---
 
-    ##### 2. 필요한 패키지 설치
-    아래 명령어를 터미널(cmd)나 VSCode의 터미널에 입력하세요:
+#### 방법 2: 파이썬 파일로 실행
 
-    ```bash
-    pip install opencv-python numpy dlib pygame
-    ```
-    ##### 3.shape_predictor_68_face_landmarks.dat 파일을 다운로드 후, Python 파일과 같은 폴더에 넣기
+##### 1. Python 설치
+- Python 3.8 이상 설치: https://www.python.org/
 
+##### 2. 필요한 패키지 설치
+아래 명령어를 터미널(cmd)나 VSCode의 터미널에 입력하세요:
 
+```bash
+pip install opencv-python numpy dlib pygame
+```
+##### 3. 모델 파일 준비
+-shape_predictor_68_face_landmarks.dat 파일을 다운로드 후, Python 파일과 같은 폴더에 넣기기.
+다운로드 링크: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2
+
+##### 4. 실행
+```bash
+    python main.py
+```
