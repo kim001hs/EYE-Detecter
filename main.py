@@ -8,6 +8,7 @@ import threading
 # 눈을 감았는지 확인하는 함수
 # 눈의 세로길이 평균/가로길이 비율을 계산해서 눈을 감았는지 확인(0.2 이하면 눈을 감았다고 판단할 예정정)
 def eye_aspect_ratio(eye):
+    eye = np.array(eye)  # eye를 numpy 배열로 변환
     # 눈의 세 점을 이용해서 비율 계산
     A = np.linalg.norm(eye[1] - eye[5])
     B = np.linalg.norm(eye[2] - eye[4])
@@ -44,10 +45,16 @@ while True:
         print("카메라 프레임을 읽을 수 없습니다.")
         continue
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    if gray is None:
-        print("grayscale 변환 실패")
+    gray = np.array(gray, dtype=np.uint8)  # 타입을 명확히 설정
+    if gray.dtype != np.uint8:
+        print("gray가 uint8이 아닙니다.")
+    if len(gray.shape) != 2:
+        print("gray가 단일 채널 이미지가 아닙니다.")
+
+    faces = detector(gray)
+    if len(faces) == 0:
+        print("얼굴을 찾을 수 없습니다.")
         continue
-    faces = detector(gray) #여기서 문제 발생
     for face in faces:
         shape = predictor(gray, face)
         shape = [(shape.part(i).x, shape.part(i).y) for i in range(68)]
@@ -58,7 +65,7 @@ while True:
         left_ear = eye_aspect_ratio(left_eye)
         right_ear = eye_aspect_ratio(right_eye)
         ear = (left_ear + right_ear) / 2.0
-
+        print(f"EAR: {ear:.2f}")
         if ear < 0.2:
             if eye_closed_start is None:
                 eye_closed_start = time.time()
