@@ -7,7 +7,7 @@
 ## 목차
 
 1.  [실행하기](#실행하기)
-2.  [게임 방법](#게임-방법)
+2.  [프로그램 설명](#프로그램-설명)
     1.  [게임 입장 화면](#게임-입장-화면)
     2.  [게임 시작 화면](#게임-시작-화면)
     3.  [주사위 저장 화면](#주사위-저장-화면)
@@ -34,7 +34,7 @@
 - Python 3.8 이상 설치: https://www.python.org/
 
 ##### 2. 필요한 패키지 설치
-아래 명령어를 터미널(cmd)나 VSCode의 터미널에 입력하세요:
+아래 명령어를 터미널(cmd)나 VSCode의 터미널에 입력
 
 ```bash
 pip install opencv-python numpy dlib pygame
@@ -47,3 +47,33 @@ pip install opencv-python numpy dlib pygame
 ```bash
     python main.py
 ```
+---
+### 프로그램 설명
+---
+#### 1.졸음 탐지
+-눈을 3초동안 감고 있으면 졸음으로 판단
+#### 2.알람 울리기
+-졸음으로 판단 시 알람을 울림
+#### 3.눈 감은 수 파악
+-눈을 감을 때마다 카운트를 해줌
+
+
+
+
+
+
+### 코드 설명
+
+
+
+### 기술 스택
+
+
+
+
+### License
+    [MIT License](https://github.com/kim001hs/Sleeping-Detecter/blob/main/LICENSE)
+
+### Reference
+
+### Review

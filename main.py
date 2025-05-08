@@ -36,6 +36,9 @@ alarm_playing = False
 eye_closed = False
 # 눈 감은 횟수
 eye_closed_count = 0
+# 눈 감은 누적 시간
+eye_closed_time = 0
+
 # 알람
 def play_alarm():
     pygame.mixer.init()
@@ -69,21 +72,31 @@ while True:
         right_ear = eye_aspect_ratio(right_eye)
         ear = (left_ear + right_ear) / 2.0
         print(f"EAR: {ear:.2f}")
+        
         if ear < 0.2:
             if eye_closed_start is None:
                 eye_closed_start = time.time()
+            # 눈을 감고 있는 상태에서 3초가 지나면 알람을 울림
             elif time.time() - eye_closed_start >= 3:
                 print("눈을 감고 있습니다.")
+                # 알람이 울리고 있지 않으면 알람을 울림
                 if not alarm_playing:
                     threading.Thread(target=play_alarm).start()
+            # 눈을 안감은 상태에서 감은 상태로 바뀌면 카운트를 증가시킴
             if eye_closed == False:
                 eye_closed = True
                 eye_closed_count+= 1
+            # 1초에 20프레임이므로 한 번 눈 감은게 확인될 때마다 누적시간에 0.05초씩 더해줌 
+            eye_closed_time +=0.05
         else:
+            # 눈 감은 시작시간 초기화
             eye_closed_start = None
+            # 눈 뜬 상태로 초기화
             eye_closed = False
+            
     cv2.imshow("Frame", frame)
-    if cv2.waitKey(1) == 27:  # ESC 키 누르면 종료
+    # ESC 키 누르면 종료
+    if cv2.waitKey(1) == 27:  
         break
 print (f"눈을 감은 횟수: {eye_closed_count}")
 cap.release()
