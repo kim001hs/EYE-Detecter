@@ -57,8 +57,10 @@ pip install opencv-python numpy dlib pygame PyQt6 matplotlib
 <img src="data/q_btn.png" alt="q_btn" width="50%">
 ? 버튼 위에 마우스를 가져다 대면 다음과 같은 소개가 출력된다.
 
+---
 
 #### 2. 측정 버튼
+
 <img src="data/default.png" alt="default" width="50%">
 연두색 측정시작 버튼을 누르면 기존의 기록을 초기화하고 측정을 시작한다.
 
@@ -70,6 +72,7 @@ pip install opencv-python numpy dlib pygame PyQt6 matplotlib
 <img src="data/stop.png" alt="stop" width="50%">
 측정 종료를 누르면 측정이 종료되고 측정시작 버튼으로 바뀐다.
 다시 시작을 누르면 초기화 후 시작된다.
+---
 
 #### 3.확장 화면
 
@@ -92,35 +95,43 @@ pip install opencv-python numpy dlib pygame PyQt6 matplotlib
 측정을 종료하면 멈춘 그래프를 확인할 수 있다
 -눈을 3초동안 감고 있으면 졸음으로 판단
 
+---
+
 #### 4.알람 울리기
     3초동안 눈을 감고있는 상태가 지속되면 data/alarm.mp3를 실행한다.
 
-
-
-
 ---
 
-
-
-
----
 ### 코드 설명
 ---
-
+코드코드
+sadfassfsaasf
 ---
 ### 기술 스택
+
+only Python
+
 ---
 
-
----
 ### License
 [MIT License](https://github.com/kim001hs/Sleeping-Detecter/blob/main/LICENSE)
----
 
 ---
+
 ### Reference
----
+
+generated with chat-gpt
 
 ---
+
 ### Review
+
+잘한거
+
+---
+못한거
+
+---
+얻은거 등등
+
 ---
