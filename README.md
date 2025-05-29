@@ -50,7 +50,7 @@ pip install opencv-python numpy dlib pygame PyQt6 matplotlib
 ### 프로그램 설명
 ---
 #### 1.실행 화면
-(기본 사진)
+[기본 화면면](data/default.png)
 기본 실행 시 나오는 화면이다. ?, +, X 버튼은 각각 프로그램 소개, 확장, 닫기 기능을 담당한다.
 (? 사진)
 ? 버튼 위에 마우스를 가져다 대면 다음과 같은 소개가 출력된다.
