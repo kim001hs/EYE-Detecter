@@ -45,11 +45,12 @@ class Overlay_Style(QtWidgets.QWidget):
         title_layout.addWidget(title_label)
         title_layout.addStretch(1)
         
-        help_tooltip = "이 프로그램은 눈의 감김을 감지하여 깜빡임 횟수, 감긴 시간을 측정합니다."
-        "\n+ 버튼을 눌러 측정한 결과를 바탕으로한 집중도 분석 페이지를 볼 수 있습니다"
-        "\n측정 시작/종료 버튼을 눌러 측정을 시작하거나 종료할 수 있습니다."
-        "\n측정 중에는 측정 시간, 누적 횟수, 누적 시간을 실시간으로 확인할 수 있습니다."
-        "\n집중도 "
+        help_tooltip = "이 프로그램은 눈의 감김을 감지하여 깜빡임 횟수, 감긴 시간을 측정합니다."\
+        "\n+ 버튼을 눌러 측정한 결과를 바탕으로한 집중도 분석 페이지를 볼 수 있습니다"\
+        "\n측정 시작/종료 버튼을 눌러 측정을 시작하거나 종료할 수 있습니다."\
+        "\n집중도 Score은 (60-g)*10/6-((mc / 20) + (md / 2))*5 으로 0에서 100 사이의 값을 가집니다."\
+        "\nFixed_score은 기존 Score의 얼굴이 검출되지 않은 시간에 대한 보정값으로, 0에서 100 사이의 값을 가집니다."\
+        "\n집중도 분석 페이지에서는 1분 단위로 측정된 집중도를 그래프로 확인할 수 있습니다."
         q_btn = QtWidgets.QToolButton(self)
         q_btn.setText("?")
         q_btn.setToolTip(help_tooltip)
@@ -177,6 +178,7 @@ class Overlay_Style(QtWidgets.QWidget):
             dx = self.analysis_size.width() - self.default_size.width()
             self.move(self._default_pos.x() - dx, self._default_pos.y())
             self.setFixedSize(self.analysis_size)
+            self.plus_btn.setText("-")
             # --- 캔버스 새로 생성 ---
             if hasattr(self, 'canvas') and self.canvas:
                 self.layout().removeWidget(self.canvas)
@@ -198,6 +200,7 @@ class Overlay_Style(QtWidgets.QWidget):
                 self.canvas = None
             if self._default_pos is not None:
                 self.move(self._default_pos)
+            self.plus_btn.setText("+")
             self.setFixedSize(self.default_size)
             self.analysis_mode = False
 
@@ -205,7 +208,7 @@ class Overlay_Style(QtWidgets.QWidget):
         if not hasattr(self, "canvas") or self.canvas is None or not self.isVisible():
             return
         import matplotlib
-        matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'Arial', 'Liberation Sans', 'sans-serif']
+        matplotlib.rcParams['font.family'] = ['DejaVu Sans', 'Arial', 'sans-serif']
 
         self.graph_data_tuple = (minute_counts, minute_durations, face_non_durations)
         if not hasattr(self, 'ax') or self.ax is None:
@@ -214,28 +217,31 @@ class Overlay_Style(QtWidgets.QWidget):
 
         n = len(minute_counts)
         x = np.arange(0,n)
-        # 미검출 시간을 0~100 스케일로 변환
-        gray_vals = [fnd*10/6 for fnd in face_non_durations]
-        score_vals = [100 - g*10/6 - ((mc / 20) + (md / 2)) * 10 / 3     for mc, md, g in zip(minute_counts, minute_durations, gray_vals)]
-        
+        # (60-g)*10/6-((mc / 20) + (md / 2))*5
+        #  100-((mc / 20) + (md / 2))*5*60/(60-g)
+        # gray_vals = [fnd*10/6 for fnd in face_non_durations]
+        score_vals = [(60-g)*10/6-((mc / 20) + (md / 2))*5 for mc, md, g in zip(minute_counts, minute_durations, face_non_durations)]
+        fixed_score_vals = [s/(60-g)*60-s for s,g in zip(score_vals, face_non_durations)]  # 0~100 사이로 클리핑
         # 점수와 회색 합이 100을 넘지 않도록 클리핑
         score_vals = [min(y, 100) for y in score_vals]
-        gray_vals = [min(g, 100-s) for g, s in zip(gray_vals, score_vals)]  # 초록 위에 덮을 수 있는 만큼만 회색
-
+        # gray_vals = [min(g, 100-s) for g, s in zip(gray_vals, score_vals)]  # 초록 위에 덮을 수 있는 만큼만 회색
+        fixed_score_vals = [min(y, 100) for y in fixed_score_vals]
+        
         width = 1.0
 
-        # 초록 bar
+        # 파랑 bar
         self.ax.bar(x, score_vals, width=width, color="#4774cf", label='Score', zorder=2)
         # 회색 bar, 초록 위에 bottom=score_vals로 쌓기!
-        self.ax.bar(x, gray_vals, width=width, color='gray', alpha=0.5, bottom=score_vals, label='None time (gray)', zorder=1)
-
+        # self.ax.bar(x, gray_vals, width=width, color='gray', alpha=0.5, bottom=score_vals, label='None time (gray)', zorder=1)
+        # 하늘색 bar, 파랑 위에 bottom=score_vals로 쌓기!
+        self.ax.bar(x, fixed_score_vals, width=width, color="#34c2ff", alpha=0.5, bottom=score_vals, label='Fixed Score', zorder=1)
         # x축 중앙에 분 표시
         self.ax.set_xticks(x + 0.5)
         self.ax.set_xticklabels([str(i+1) for i in range(n)])
         self.ax.set_xlim(0, n)
         self.ax.set_ylim(0, 100)
         self.ax.set_xlabel("Minute")
-        self.ax.set_ylabel("concentration")            
+        self.ax.set_ylabel("concentration score")            
         self.ax.set_title("Concentration (per Minute)")
         self.ax.legend()
         self.fig.tight_layout()

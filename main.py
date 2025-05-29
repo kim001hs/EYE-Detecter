@@ -38,7 +38,8 @@ class CVWorker:
         prev_closed_count = 0
         prev_closed_time = 0
         prev_none_time = 0
-        next_minute_mark = 60
+        graph_update_time = 60  # 그래프 업데이트 주기 (초)
+        next_minute_mark = graph_update_time
 
         def eye_aspect_ratio(eye):
             eye = np.array(eye)
@@ -67,16 +68,45 @@ class CVWorker:
 
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 faces = detector(gray)
-                if len(faces) == 0:
-                    if face_none_start is None:
-                        face_none_time = time.time()
-                    else:
+                if start_time is None:
+                    start_time = time.time()
+                elapsed_seconds = int(time.time() - start_time)
+                
+                minutes = elapsed_seconds // 60
+                seconds = elapsed_seconds % 60
+                if elapsed_seconds >= next_minute_mark:
+                    if eye_closed_start is not None:
+                        eye_closed_time += time.time() - eye_closed_start
+                        eye_closed_start = None
+                    if face_none_start is not None:
                         face_none_time += time.time() - face_none_start
                         face_none_start = None
-                    print("얼굴을 찾을 수 없습니다.")
+                    minute_counts.append(eye_closed_count - prev_closed_count)
+                    print(f"1분동안 눈 감은 수: {eye_closed_count - prev_closed_count}")
+                    minute_durations.append(eye_closed_time - prev_closed_time)
+                    print(f"1분동안 눈 감은 시간: {eye_closed_time - prev_closed_time}")
+                    face_non_durations.append(face_none_time - prev_none_time)
+                    print(f"1분동안 얼굴 인식이 되지 않은 시간: {face_none_time - prev_none_time}")
+                    prev_closed_count = eye_closed_count
+                    prev_closed_time = eye_closed_time
+                    prev_none_time = face_none_time
+                    next_minute_mark += graph_update_time
+                    self.overlay.update_graph(minute_counts, minute_durations, face_non_durations)
+                
+                if len(faces) == 0:
+                    if eye_closed_start is not None:
+                        eye_closed_time += time.time() - eye_closed_start
+                        eye_closed_start = None
+                    if face_none_start is None:
+                        face_none_start = time.time()
+                    # print("얼굴을 찾을 수 없습니다.")
+                    self.overlay.update_values(f"{minutes:02}:{seconds:02}", eye_closed_count, eye_closed_time)
                     continue
                 else:
-                    face_none_start = None
+                    if face_none_start is not None:
+                        face_none_time += time.time() - face_none_start
+                        face_none_start = None
+                    
                 for face in faces:
                     shape = predictor(gray, face)
                     shape = [(shape.part(i).x, shape.part(i).y) for i in range(68)]
@@ -84,13 +114,13 @@ class CVWorker:
                     left_eye = shape[lStart:lEnd]
                     right_eye = shape[rStart:rEnd]
                     ear = (eye_aspect_ratio(left_eye) + eye_aspect_ratio(right_eye)) / 2.0
-                    print(f"EAR: {ear:.2f}")
+                    # print(f"EAR: {ear:.2f}")
 
                     if ear < 0.2:
                         if eye_closed_start is None:
                             eye_closed_start = time.time()
                         elif time.time() - eye_closed_start >= 3:
-                            print("눈을 감고 있습니다.")
+                            # print("눈을 감고 있습니다.")
                             if not alarm_playing:
                                 threading.Thread(target=play_alarm).start()
                                 alarm_playing = True
@@ -104,23 +134,6 @@ class CVWorker:
                         eye_closed = False
                         alarm_playing = False
 
-                if start_time is None:
-                    start_time = time.time()
-                elapsed_seconds = int(time.time() - start_time)
-                if elapsed_seconds >= next_minute_mark:
-                    current_minute = next_minute_mark // 60
-                    minute_counts.append(eye_closed_count - prev_closed_count)
-                    minute_durations.append(eye_closed_time - prev_closed_time)
-                    face_non_durations.append(face_none_time - prev_none_time)
-                    prev_closed_count = eye_closed_count
-                    prev_closed_time = eye_closed_time
-                    prev_none_time = face_none_time
-                    next_minute_mark += 60
-                    self.overlay.update_graph(minute_counts, minute_durations, face_non_durations)
-
-
-                minutes = elapsed_seconds // 60
-                seconds = elapsed_seconds % 60
                 if self.overlay:
                     self.overlay.update_values(f"{minutes:02}:{seconds:02}", eye_closed_count, eye_closed_time)
                 # cv2.imshow("Frame", frame)
