@@ -82,11 +82,11 @@ class CVWorker:
                         face_none_time += time.time() - face_none_start
                         face_none_start = None
                     minute_counts.append(eye_closed_count - prev_closed_count)
-                    print(f"1분동안 눈 감은 수: {eye_closed_count - prev_closed_count}")
+                    # print(f"1분동안 눈 감은 수: {eye_closed_count - prev_closed_count}")
                     minute_durations.append(eye_closed_time - prev_closed_time)
-                    print(f"1분동안 눈 감은 시간: {eye_closed_time - prev_closed_time}")
+                    # print(f"1분동안 눈 감은 시간: {eye_closed_time - prev_closed_time}")
                     face_non_durations.append(face_none_time - prev_none_time)
-                    print(f"1분동안 얼굴 인식이 되지 않은 시간: {face_none_time - prev_none_time}")
+                    # print(f"1분동안 얼굴 인식이 되지 않은 시간: {face_none_time - prev_none_time}")
                     prev_closed_count = eye_closed_count
                     prev_closed_time = eye_closed_time
                     prev_none_time = face_none_time
